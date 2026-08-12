@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SCM Category Mapping — Purchasing Groups</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#12263A; --ink-2:#3D5166; --line:#CBD5DF; --line-soft:#E3E9EF;
+  --surface:#FFFFFF; --canvas:#EDF1F5; --band:#F4F7FA;
+  --flag:#9A6510; --flag-bg:#FDF1D8;
+  --g1:#2F6B5F; --g2:#3A4E8C; --g3:#7A3B62; --g4:#A6702A; --g5:#4F6B2A;
+  --none:#B4C0CC;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --sans:"IBM Plex Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--canvas);color:var(--ink);font-family:var(--sans);font-size:13px;line-height:1.45}
+button,input,select{font-family:inherit;font-size:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--g2);outline-offset:1px}
+
+/* ---------- masthead ---------- */
+header{background:var(--ink);color:#fff;padding:14px 20px 0}
+.mast{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+.mast h1{margin:0;font-size:15px;font-weight:600;letter-spacing:.02em}
+.mast .sub{font-size:11.5px;color:#9FB2C6}
+.bar-wrap{margin:12px 0 0;padding-bottom:12px}
+.bar{display:flex;height:26px;border-radius:3px;overflow:hidden;background:#0C1B2A;font-family:var(--mono);font-size:10px}
+.bar span{display:flex;align-items:center;justify-content:center;color:#fff;transition:flex-grow .35s ease;overflow:hidden;white-space:nowrap;min-width:0}
+.bar-key{display:flex;gap:14px;flex-wrap:wrap;margin-top:7px;font-size:10.5px;color:#9FB2C6;font-family:var(--mono)}
+.bar-key i{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:5px}
+
+/* ---------- layout ---------- */
+.wrap{display:grid;grid-template-columns:minmax(0,1fr) 372px;gap:16px;padding:16px 20px 40px;align-items:start}
+@media(max-width:1180px){.wrap{grid-template-columns:1fr}}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:4px}
+.panel>h2{margin:0;padding:10px 14px;font-size:11px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--ink-2);border-bottom:1px solid var(--line-soft)}
+
+/* ---------- toolbar ---------- */
+.tools{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:10px 14px;border-bottom:1px solid var(--line-soft)}
+.tools input[type=search]{flex:1;min-width:150px;padding:6px 9px;border:1px solid var(--line);border-radius:3px;background:#fff}
+.btn{padding:6px 11px;background:#fff;border:1px solid var(--line);border-radius:3px;cursor:pointer;font-size:12px}
+.btn:hover{background:var(--band);border-color:var(--ink-2)}
+.btn.primary{background:var(--ink);color:#fff;border-color:var(--ink)}
+.btn.primary:hover{background:#20405F}
+.chk{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--ink-2);cursor:pointer}
+
+/* ---------- table ---------- */
+.scroll{overflow:auto;max-height:calc(100vh - 250px)}
+table{border-collapse:separate;border-spacing:0;width:100%}
+th{position:sticky;top:0;z-index:3;background:var(--ink);color:#fff;font-size:10px;font-weight:600;
+  letter-spacing:.07em;text-transform:uppercase;text-align:left;padding:8px 9px;white-space:nowrap}
+td{padding:6px 9px;border-bottom:1px solid var(--line-soft);vertical-align:middle}
+tbody tr:hover td{background:#F2F7FB}
+.cat-head td{background:var(--band);border-top:2px solid var(--ink);padding-top:8px;padding-bottom:8px}
+.cat-head:hover td{background:var(--band)}
+.cat-name{font-weight:600;font-size:13.5px}
+.cls{font-family:var(--mono);font-size:11px;color:var(--ink-2)}
+.va{font-size:11.5px;color:var(--ink-2)}
+.va b{font-weight:500;color:var(--ink)}
+.inv{font-family:var(--mono);font-size:11.5px;font-weight:500;white-space:nowrap}
+.holds{font-size:11.5px;color:var(--ink-2)}
+.num{font-family:var(--mono);font-size:11.5px;text-align:right;white-space:nowrap}
+.who{font-size:11.5px}
+.who i{color:var(--none);font-style:italic}
+.band{display:block;font-family:var(--mono);font-size:9.5px;color:var(--ink-2);font-style:normal;margin-top:1px}
+.cur{margin-top:6px;font-size:11px;color:var(--ink-2);background:#EEF4F1;border-left:2px solid var(--g1);padding:4px 8px;border-radius:0 3px 3px 0}
+.cur span{display:block;font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;color:#5C7A70;margin-bottom:1px}
+.gap .inv{color:var(--flag)}
+tr.gap td{background:#FEFAF0}
+tr.gap:hover td{background:#FCF4E4}
+.flag{display:inline-block;margin-left:6px;width:14px;height:14px;line-height:14px;text-align:center;border-radius:50%;
+  background:var(--flag-bg);color:var(--flag);font-size:9.5px;font-weight:700;cursor:help;font-family:var(--mono)}
+select.pg{width:100%;padding:5px 6px;border:1px solid var(--line);border-radius:3px;background:#fff;
+  font-family:var(--mono);font-size:11.5px;cursor:pointer}
+select.pg[data-v=""]{background:#FFFBEE;border-color:#DCC894}
+.swatch{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:6px;vertical-align:baseline}
+.mini{padding:3px 7px;font-size:10.5px;background:#fff;border:1px solid var(--line);border-radius:3px;cursor:pointer;
+  font-family:var(--mono)}
+.mini:hover{background:#fff;border-color:var(--ink-2)}
+
+/* ---------- groups ---------- */
+.grp{border-bottom:1px solid var(--line-soft);padding:11px 14px}
+.grp:last-child{border-bottom:0}
+.grp-top{display:flex;align-items:center;gap:8px}
+.tag{font-family:var(--mono);font-size:10px;font-weight:600;color:#fff;padding:2px 6px;border-radius:2px;white-space:nowrap}
+.grp-top input{flex:1;min-width:0;padding:4px 7px;border:1px solid transparent;border-radius:3px;background:var(--band);font-weight:600}
+.grp-top input:hover{border-color:var(--line)}
+.grp-top input:focus{background:#fff;border-color:var(--line)}
+.stats{display:flex;gap:14px;margin:7px 0 0;font-family:var(--mono);font-size:10.5px;color:var(--ink-2)}
+.stats b{color:var(--ink);font-weight:600}
+.cats{margin:7px 0 0;font-size:11.5px;color:var(--ink-2);line-height:1.5}
+.cats:empty::after{content:"No categories assigned yet.";color:var(--none);font-style:italic}
+.chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+.chip{display:inline-flex;align-items:center;gap:5px;background:var(--band);border:1px solid var(--line);
+  border-radius:11px;padding:2px 4px 2px 9px;font-size:11.5px}
+.chip button{border:0;background:none;cursor:pointer;color:var(--ink-2);font-size:14px;line-height:1;padding:0 3px}
+.chip button:hover{color:#A02020}
+.addb{display:flex;gap:5px;margin-top:8px}
+.addb input{flex:1;min-width:0;padding:5px 8px;border:1px solid var(--line);border-radius:3px}
+
+.note-line{padding:9px 14px;font-size:11.5px;color:var(--flag);background:var(--flag-bg);border-top:1px solid #EBD9AE}
+footer{padding:0 20px 30px;font-size:11.5px;color:var(--ink-2)}
+footer code{font-family:var(--mono);background:#fff;border:1px solid var(--line);padding:1px 5px;border-radius:2px}
+.saved{font-size:11px;color:var(--ink-2);font-family:var(--mono)}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<header>
+  <div class="mast">
+    <h1>SCM Category Mapping</h1>
+    <span class="sub">Value analysis, planners and today&#39;s buyers are mapped. Assign each inventory group to a purchasing group.</span>
+  </div>
+  <div class="bar-wrap">
+    <div class="bar" id="bar"></div>
+    <div class="bar-key" id="barkey"></div>
+  </div>
+</header>
+
+<div class="wrap">
+  <section class="panel">
+    <div class="tools">
+      <input type="search" id="q" placeholder="Search category, group, planner or buyer" aria-label="Search">
+      <label class="chk"><input type="checkbox" id="onlyOpen"> Unassigned only</label>
+      <span style="flex:1"></span>
+      <span class="saved" id="saved"></span>
+      <button class="btn" id="expCsv">Export CSV</button>
+      <button class="btn" id="expJson">Save file</button>
+      <button class="btn" id="impBtn">Load file</button>
+      <input type="file" id="impFile" accept="application/json" hidden>
+      <button class="btn" id="reset">Clear all</button>
+    </div>
+    <div class="scroll">
+      <table>
+        <thead><tr>
+          <th style="width:48px">Class</th>
+          <th style="width:120px">Inventory group</th>
+          <th>What the group holds</th>
+          <th style="width:180px">Inventory planner</th>
+          <th style="width:170px">Buyer today</th>
+          <th style="width:70px;text-align:right">Items</th>
+          <th style="width:128px">Purchasing group</th>
+        </tr></thead>
+        <tbody id="tb"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>Purchasing groups</h2>
+    <div id="groups"></div>
+    <div class="note-line" id="openLine"></div>
+  </section>
+</div>
+
+<footer>
+  Assignments save in this browser as you work. Use <b>Save file</b> to write a <code>mapping.json</code> you can commit
+  to the repo or send on, and <b>Load file</b> to bring one back.
+</footer>
+
+<script id="seed" type="application/json">{"rows":[{"id":1,"cls":61,"cat":"Medical Instruments","vas":"Motaz Mohammad Abed Al-Haleem Al-Azab","van":"Hemant Kumar Wadakar","inv":"Not in planning file","holds":"","items":0,"planner":"","buyer":"","band":"","note":"Not in the planning file and not in the planner/buyer structure. VA still names a stock approver - confirm whether non-stock, or stock not yet planned.","gap":true,"label":"Medical Instruments"},{"id":2,"cls":78,"cat":"Radiology Supplies","vas":"Hemant Kumar Wadakar","van":"Hemant Kumar Wadakar","inv":"Group 1","holds":"Contrast media & injector consumables","items":37,"planner":"Ahmed Mahmoud Lotfy Batran","buyer":"Muneeb Madala","band":"below and above QAR 200K","note":"","gap":false,"label":"Radiology Supplies"},{"id":3,"cls":79,"cat":"Cssd General Supplies","vas":"Motaz Mohammad Abed Al-Haleem Al-Azab","van":"Motaz Mohammad Abed Al-Haleem Al-Azab","inv":"Group 1","holds":"Orthopaedic plating & fixation","items":7642,"planner":"Bakar Osama Binladn","buyer":"","band":"","note":"","gap":false,"label":"Cssd General Supplies"},{"id":4,"cls":80,"cat":"Cssd Orthopedic Supplies","vas":"Motaz Mohammad Abed Al-Haleem Al-Azab","van":"Motaz Mohammad Abed Al-Haleem Al-Azab","inv":"Group 1","holds":"Trauma implants - nails, plates, screws","items":7437,"planner":"Bakar Osama Binladn","buyer":"","band":"","note":"Non-stock VA sheet calls class 80 'Prosthetics & Orthotics'. Stock sources and the item contents say CSSD Orthopaedic.","gap":false,"label":"Cssd Orthopedic Supplies"},{"id":5,"cls":81,"cat":"Bio-Medical Engineering Machine Supplies","vas":"Hemant Kumar Wadakar","van":"Hemant Kumar Wadakar","inv":"Not in planning file","holds":"","items":0,"planner":"","buyer":"","band":"","note":"Not in the planning file and not in the planner/buyer structure. VA still names a stock approver - confirm whether non-stock, or stock not yet planned.","gap":true,"label":"Bio-Medical Engineering Machine Supplies \u00b7 class 81"},{"id":6,"cls":82,"cat":"Bio-Medical Engineering Machine Supplies","vas":"Hemant Kumar Wadakar","van":"Hemant Kumar Wadakar","inv":"Not in planning file","holds":"","items":0,"planner":"","buyer":"","band":"","note":"Not in the planning file and not in the planner/buyer structure. VA still names a stock approver - confirm whether non-stock, or stock not yet planned.","gap":true,"label":"Bio-Medical Engineering Machine Supplies \u00b7 class 82"},{"id":7,"cls":83,"cat":"Bio-Medical Engineering General Supplies","vas":"Hemant Kumar Wadakar","van":"Hemant Kumar Wadakar","inv":"Not in planning file","holds":"","items":0,"planner":"","buyer":"","band":"","note":"Not in the planning file and not in the planner/buyer structure. VA still names a stock approver - confirm whether non-stock, or stock not yet planned.","gap":true,"label":"Bio-Medical Engineering General Supplies"},{"id":8,"cls":85,"cat":"Engineering Civil Supplies","vas":"Ismail Moothedath","van":"Ismail Moothedath","inv":"Not in planning file","holds":"","items":0,"planner":"","buyer":"","band":"","note":"Not in the planning file and not in the planner/buyer structure. VA still names a stock approver - confirm whether non-stock, or stock not yet planned.","gap":true,"label":"Engineering Civil Supplies"},{"id":9,"cls":86,"cat":"Engineering Mechanical Supplies","vas":"Ismail Moothedath","van":"Ismail Moothedath","inv":"Not in planning file","holds":"","items":0,"planner":"","buyer":"","band":"","note":"Not in the planning file and not in the planner/buyer structure. VA still names a stock approver - confirm whether non-stock, or stock not yet planned.","gap":true,"label":"Engineering Mechanical Supplies"},{"id":10,"cls":87,"cat":"Engineering Electrical Supplies","vas":"Ismail Moothedath","van":"Ismail Moothedath","inv":"Not in planning file","holds":"","items":0,"planner":"","buyer":"","band":"","note":"Not in the planning file, yet the Business Plan lists group 87 among the inventory groups. No planner or buyer named.","gap":true,"label":"Engineering Electrical Supplies"},{"id":11,"cls":88,"cat":"Prosthetic And Orthopedic Supplies","vas":"Ismail Moothedath","van":"Ismail Moothedath","inv":"Group 1","holds":"Diabetic footwear & insoles","items":683,"planner":"Jefferson Mbonifor Fubi","buyer":"Muneeb Madala","band":"below and above QAR 200K","note":"","gap":false,"label":"Prosthetic And Orthopedic Supplies"},{"id":12,"cls":90,"cat":"Surgical Supplies","vas":"Motaz Mohammad Abed Al-Haleem Al-Azab","van":"Mohammed Atieh Deeb Albibi","inv":"Group 1","holds":"Laparoscopy, mesh & stapling","items":362,"planner":"Mohamed Bakry Hussein Hassan","buyer":"Sahar Rashid Abdul Rashid Alwi","band":"below QAR 200K","note":"","gap":false,"label":"Surgical Supplies"},{"id":13,"cls":90,"cat":"Surgical Supplies","vas":"Motaz Mohammad Abed Al-Haleem Al-Azab","van":"Mohammed Atieh Deeb Albibi","inv":"Group 2","holds":"Sutures & procedure packs","items":358,"planner":"Mohamed Selim","buyer":"Sahar Rashid Abdul Rashid Alwi","band":"below QAR 200K","note":"","gap":false,"label":"Surgical Supplies"},{"id":14,"cls":90,"cat":"Surgical Supplies","vas":"Motaz Mohammad Abed Al-Haleem Al-Azab","van":"Mohammed Atieh Deeb Albibi","inv":"Group 3","holds":"Implants & cardiovascular perfusion","items":322,"planner":"Reem Ali Abdalhay Aboud","buyer":"Hajar Azzat","band":"Above QAR 200K","note":"","gap":false,"label":"Surgical Supplies"},{"id":15,"cls":90,"cat":"Surgical Supplies","vas":"Motaz Mohammad Abed Al-Haleem Al-Azab","van":"Mohammed Atieh Deeb Albibi","inv":"Group 5","holds":"Drains, blades & specialty systems","items":329,"planner":"Ashraf Zuhdi Mustafa Abu Afifa","buyer":"Maria Aleth Gaminde","band":"Above QAR 200K","note":"Class 90 has no Group 4; class 91 does.","gap":false,"label":"Surgical Supplies"},{"id":16,"cls":91,"cat":"Medical Supplies","vas":"Motaz Mohammad Abed Al-Haleem Al-Azab","van":"Mohammed Atieh Deeb Albibi / Zohair A/Hamid A. Abou Elfoul","inv":"Group 1","holds":"Needles, syringes & basic consumables","items":269,"planner":"Mohamed Ezzeldin Hamza Sawaly","buyer":"Juan Paulo Chaves Ong","band":"below QAR 200K","note":"","gap":false,"label":"Medical Supplies"},{"id":17,"cls":91,"cat":"Medical Supplies","vas":"Motaz Mohammad Abed Al-Haleem Al-Azab","van":"Mohammed Atieh Deeb Albibi / Zohair A/Hamid A. Abou Elfoul","inv":"Group 2","holds":"Anaesthesia, airway & gloves","items":254,"planner":"Rafeek Manchayil","buyer":"Shahd Mahmoud Elhakim","band":"below QAR 200K","note":"","gap":false,"label":"Medical Supplies"},{"id":18,"cls":91,"cat":"Medical Supplies","vas":"Motaz Mohammad Abed Al-Haleem Al-Azab","van":"Mohammed Atieh Deeb Albibi / Zohair A/Hamid A. Abou Elfoul","inv":"Group 3","holds":"Respiratory therapy & tracheostomy","items":281,"planner":"Ruaa AbdeRaheem Alfadol Muhammad","buyer":"Edmund P. Quinones","band":"Above QAR 200K","note":"","gap":false,"label":"Medical Supplies"},{"id":19,"cls":91,"cat":"Medical Supplies","vas":"Motaz Mohammad Abed Al-Haleem Al-Azab","van":"Mohammed Atieh Deeb Albibi / Zohair A/Hamid A. Abou Elfoul","inv":"Group 4","holds":"Catheters, feeding & infusion sets","items":285,"planner":"Mohamed Aaheeb Mohamed Hussain","buyer":"Ebtihaj Bushara Adam Osman","band":"Above QAR 200K","note":"","gap":false,"label":"Medical Supplies"},{"id":20,"cls":91,"cat":"Medical Supplies","vas":"Motaz Mohammad Abed Al-Haleem Al-Azab","van":"Mohammed Atieh Deeb Albibi / Zohair A/Hamid A. Abou Elfoul","inv":"Group 5","holds":"Wound care & dressings","items":266,"planner":"Muhammed Shaneej Challappurath Abdu","buyer":"Degie Grace Estose Balili","band":"Above QAR 200K","note":"","gap":false,"label":"Medical Supplies"},{"id":21,"cls":92,"cat":"Office Supply And Consumables Supplies","vas":"Hemant Kumar Wadakar","van":"Hemant Kumar Wadakar","inv":"Group 1","holds":"Office & consumable supplies","items":200,"planner":"Maaz Ahmed A M Elfaragabi","buyer":"","band":"","note":"","gap":false,"label":"Office Supply And Consumables Supplies"},{"id":22,"cls":93,"cat":"Housekeeping And Cleaning Supplies","vas":"Zohair A/Hamid A. Abou Elfoul","van":"Zohair A/Hamid A. Abou Elfoul","inv":"Group 1","holds":"Bags & cleaning consumables","items":72,"planner":"Maysoon Hamad M J Nabhan","buyer":"","band":"","note":"","gap":false,"label":"Housekeeping And Cleaning Supplies"},{"id":23,"cls":94,"cat":"Catering Material Supplies","vas":"Ismail Moothedath","van":"Zohair A/Hamid A. Abou Elfoul","inv":"Group 1","holds":"Catering materials","items":5,"planner":"Maysoon Hamad M J Nabhan","buyer":"","band":"","note":"","gap":false,"label":"Catering Material Supplies"},{"id":24,"cls":95,"cat":"Clothing And Uniform Supplies","vas":"-","van":"Zohair A/Hamid A. Abou Elfoul","inv":"Group 1","holds":"Clothing, linen & uniform","items":15,"planner":"Maaz Ahmed A M Elfaragabi","buyer":"","band":"","note":"The VA stock row for class 95 was deleted, but these 15 stock items exist. No stock-side VA owner.","gap":false,"label":"Clothing And Uniform Supplies"},{"id":25,"cls":96,"cat":"Forms And Registers","vas":"Hemant Kumar Wadakar","van":"Hemant Kumar Wadakar","inv":"Group 1","holds":"Forms, cards & thermal paper","items":78,"planner":"Maysoon Hamad M J Nabhan","buyer":"","band":"","note":"","gap":false,"label":"Forms And Registers"},{"id":26,"cls":97,"cat":"Laboratory Supplies","vas":"Zohair A/Hamid A. Abou Elfoul","van":"Zohair A/Hamid A. Abou Elfoul","inv":"Group 1","holds":"Analyser reagents & consumables (now includes PCR / molecular)","items":256,"planner":"Ahmed Mahmoud Lotfy Batran","buyer":"Sundaresan Arunprakash","band":"below and above QAR 200K","note":"Planning Group 2 (2 items, PCR/molecular) has been folded into Group 1 in the new structure - 254 + 2 = 256.","gap":false,"label":"Laboratory Supplies"},{"id":27,"cls":97,"cat":"Laboratory Supplies","vas":"Zohair A/Hamid A. Abou Elfoul","van":"Zohair A/Hamid A. Abou Elfoul","inv":"Group 3","holds":"Microbiology, POCT & antisera","items":255,"planner":"Muhammad Faisal Ambalathinkal","buyer":"Sundaresan Arunprakash","band":"below and above QAR 200K","note":"","gap":false,"label":"Laboratory Supplies"},{"id":28,"cls":98,"cat":"Food Supplies","vas":"Ismail Moothedath","van":"Ismail Moothedath","inv":"Not in planning file","holds":"","items":0,"planner":"","buyer":"","band":"","note":"Not in the planning file, yet the Business Plan lists group 98 among the inventory groups. No planner or buyer named.","gap":true,"label":"Food Supplies"},{"id":29,"cls":99,"cat":"Dental Supplies","vas":"Fanda Yahya Ali Salem","van":"Fanda Yahya Ali Salem","inv":"Group 1","holds":"Orthodontics - bands, archwires, brackets","items":557,"planner":"Ziad Youssef Yammine & Hissa Abdulrahman J M AL-Shamlan","buyer":"Muneeb Madala","band":"below and above QAR 200K","note":"","gap":false,"label":"Dental Supplies"},{"id":30,"cls":99,"cat":"Dental Supplies","vas":"Fanda Yahya Ali Salem","van":"Fanda Yahya Ali Salem","inv":"Group 2","holds":"Prosthodontics - acrylic teeth & crowns","items":538,"planner":"Ziad Youssef Yammine","buyer":"Muneeb Madala","band":"below and above QAR 200K","note":"","gap":false,"label":"Dental Supplies"},{"id":31,"cls":99,"cat":"Dental Supplies","vas":"Fanda Yahya Ali Salem","van":"Fanda Yahya Ali Salem","inv":"Group 3","holds":"Dental implants - abutments & components","items":247,"planner":"Ziad Youssef Yammine","buyer":"Muneeb Madala","band":"below and above QAR 200K","note":"","gap":false,"label":"Dental Supplies"},{"id":32,"cls":99,"cat":"Dental Supplies","vas":"Fanda Yahya Ali Salem","van":"Fanda Yahya Ali Salem","inv":"Not yet grouped","holds":"Not grouped in the planning file","items":107,"planner":"","buyer":"","band":"","note":"107 items sit outside every planning group and are absent from the planner/buyer structure. No planner, no buyer.","gap":false,"label":"Dental Supplies"}],"buyers":[{"n":"Ahmed Mohammed Attal","s":"Drugs","r":"Yes"},{"n":"Hisham Khalil Nasser","s":"Drugs","r":"Yes"},{"n":"Iman H. R. AlSlakhi","s":"Drugs","r":"Yes"},{"n":"Irfan Ahmed Khan","s":"Drugs","r":"Yes"},{"n":"Mohamed Ahmed Ramadan Abdelhalim","s":"Drugs","r":"Yes"},{"n":"Mohammed Shafeer Achentavida Chambodan","s":"Drugs","r":"Yes"},{"n":"Nasser Amro","s":"Drugs","r":"Yes"},{"n":"Osama Ahmed Rabah Bakhite","s":"Drugs","r":"Yes"},{"n":"Palanivel Vaithilingam","s":"Drugs","r":"Yes"},{"n":"Shabab Puthuvettil","s":"Drugs","r":"Yes"},{"n":"Wincen Carl Prado Pena","s":"Drugs","r":"Yes"},{"n":"Ahmad Saleh Jaber Al-Yafei","s":"Drugs","r":"No"},{"n":"Ali Asad Bakhash","s":"Drugs","r":"No"},{"n":"Nadera Almass S A AlKhatter","s":"Drugs","r":"No"},{"n":"Reda Shaaban Mohamed Abdelrahman","s":"Drugs","r":"No"},{"n":"Reem Faris D A Al-Shammari","s":"Drugs","r":"No"},{"n":"Suhaila Shariff","s":"Drugs","r":"No"},{"n":"Wahida Ali M A AlSharshani","s":"Drugs","r":"No"},{"n":"Carlo Alberto Mendoza Garcia","s":"Engineering","r":"Yes"},{"n":"Evangeline Pua","s":"Engineering","r":"Yes"},{"n":"Ibrahim Ahmed Mohamed Elazzami Nassar","s":"Engineering","r":"Yes"},{"n":"Kamaruddeen Pandarathodi Attavalappil","s":"Engineering","r":"Yes"},{"n":"Mohammed Saifudeen Mohamed Ismail","s":"Engineering","r":"Yes"},{"n":"Muhaimin Kayyala","s":"Engineering","r":"Yes"},{"n":"Rheafe Amaba Valladolid","s":"Engineering","r":"Yes"},{"n":"Sheryl Lou Atienza Carpio","s":"Engineering","r":"Yes"},{"n":"Cheryl Omane Tanjusay","s":"General","r":"Yes"},{"n":"Jayrold E Porciuncula","s":"General","r":"Yes"},{"n":"Jeya Seelan Emilies","s":"General","r":"Yes"},{"n":"Jonathan Baluyot Sureta","s":"General","r":"Yes"},{"n":"Jose Emmanuel Bernabe Cruz","s":"General","r":"Yes"},{"n":"Mohamed Fazly Atham Lebbe Nawas","s":"General","r":"Yes"},{"n":"Mohamed Hammad Abdelfattah El Sayed Hammad","s":"General","r":"Yes"},{"n":"Abdirehman Abdulkadir Jehad","s":"Medical Non-Stock","r":"Yes"},{"n":"Amr Ahmed Osman Mohammed","s":"Medical Non-Stock","r":"Yes"},{"n":"Ashlee Ocampio Mayrina","s":"Medical Non-Stock","r":"Yes"},{"n":"Francialyn Nunez Guiriba","s":"Medical Non-Stock","r":"Yes"},{"n":"Gerlie Marloquillano Laroa","s":"Medical Non-Stock","r":"Yes"},{"n":"Karam Tebeh","s":"Medical Non-Stock","r":"Yes"},{"n":"Lyndon Celestino Capulong","s":"Medical Non-Stock","r":"Yes"},{"n":"Maryam Farrukh Farrukh Aijaz","s":"Medical Non-Stock","r":"Yes"},{"n":"Maya Mohamad Samir Sankary","s":"Medical Non-Stock","r":"Yes"},{"n":"Michael Vidanes Umali","s":"Medical Non-Stock","r":"Yes"},{"n":"Nasim Faisal Dookhy","s":"Medical Non-Stock","r":"Yes"},{"n":"Esmahan Saleh Abdalla Salem Tehemer","s":"Medical Non-Stock","r":"No"},{"n":"Gadier Tarig A M Musa","s":"Medical Non-Stock","r":"No"},{"n":"Hadeil Mohammed S M AL Yarboey","s":"Medical Non-Stock","r":"No"},{"n":"Huda Hamad F A Al-Marri","s":"Medical Non-Stock","r":"No"},{"n":"Jawahier Faris A A Alshammari","s":"Medical Non-Stock","r":"No"},{"n":"Khahzna Mubarak A A Al-Mannai","s":"Medical Non-Stock","r":"No"},{"n":"Khuloud Yousuf M Ghannam","s":"Medical Non-Stock","r":"No"},{"n":"Latefa Nasser Kh T Al Kuwari","s":"Medical Non-Stock","r":"No"},{"n":"MADHAT Y. A. ASHOUR","s":"Medical Non-Stock","r":"No"},{"n":"Maha Mohammed Jameela","s":"Medical Non-Stock","r":"No"},{"n":"Majed Naser M J Al-Naimi","s":"Medical Non-Stock","r":"No"},{"n":"Mubaraka Ali H A AlMarri","s":"Medical Non-Stock","r":"No"},{"n":"Najlaa Nasser A A Al-Marri","s":"Medical Non-Stock","r":"No"},{"n":"Osama Mohamed Said Elsayed Salem","s":"Medical Non-Stock","r":"No"},{"n":"Paleri Kunyil Nasar","s":"Medical Non-Stock","r":"No"},{"n":"Rafe Ahmed Tamim K A","s":"Medical Non-Stock","r":"No"},{"n":"Riyas Kallen Thodan","s":"Medical Non-Stock","r":"No"},{"n":"Thanseer Bappirampeth","s":"Medical Non-Stock","r":"No"},{"n":"Degie Grace Estose Balili","s":"Medical Stock","r":"Yes"},{"n":"Ebtihaj Bushara Adam Osman","s":"Medical Stock","r":"Yes"},{"n":"Edmund P. Quinones","s":"Medical Stock","r":"Yes"},{"n":"Hajar Azzat","s":"Medical Stock","r":"Yes"},{"n":"Juan Paulo Chaves Ong","s":"Medical Stock","r":"Yes"},{"n":"Maria Aleth Gaminde","s":"Medical Stock","r":"Yes"},{"n":"Mohsen Samy Abdelmohsen Abouhassan","s":"Medical Stock","r":"Yes"},{"n":"Muneeb Madala","s":"Medical Stock","r":"Yes"},{"n":"Sahar Rashid Abdul Rashid Alwi","s":"Medical Stock","r":"Yes"},{"n":"Shahd Mahmoud Elhakim","s":"Medical Stock","r":"Yes"},{"n":"Sundaresan Arunprakash","s":"Medical Stock","r":"Yes"},{"n":"Farouk Mohamed Abd Elaziz Ibrahim","s":"Not on staff list","r":"?"},{"n":"Jaseem Naduthody","s":"Not on staff list","r":"?"},{"n":"Sharon Dumangeng Cacliong","s":"Not on staff list","r":"?"}],"total":20855,"named_buyers":["Degie Grace Estose Balili","Ebtihaj Bushara Adam Osman","Edmund P. Quinones","Hajar Azzat","Juan Paulo Chaves Ong","Maria Aleth Gaminde","Muneeb Madala","Sahar Rashid Abdul Rashid Alwi","Shahd Mahmoud Elhakim","Sundaresan Arunprakash"],"planners":["Ahmed Mahmoud Lotfy Batran","Ashraf Zuhdi Mustafa Abu Afifa","Bakar Osama Binladn","Hissa Abdulrahman J M AL-Shamlan","Jefferson Mbonifor Fubi","Maaz Ahmed A M Elfaragabi","Maysoon Hamad M J Nabhan","Mohamed Aaheeb Mohamed Hussain","Mohamed Bakry Hussein Hassan","Mohamed Ezzeldin Hamza Sawaly","Mohamed Selim","Muhammad Faisal Ambalathinkal","Muhammed Shaneej Challappurath Abdu","Rafeek Manchayil","Reem Ali Abdalhay Aboud","Ruaa AbdeRaheem Alfadol Muhammad","Ziad Youssef Yammine"]}</script>
+<script>
+const D=JSON.parse(document.getElementById('seed').textContent);
+const GK=['G1','G2','G3','G4','G5'];
+const GC={G1:'var(--g1)',G2:'var(--g2)',G3:'var(--g3)',G4:'var(--g4)',G5:'var(--g5)'};
+const KEY='hmc-scm-mapping-v1';
+const fmt=n=>n.toLocaleString('en-US');
+
+let st=load();
+function blank(){return{assign:{},names:{G1:'',G2:'',G3:'',G4:'',G5:''},buyers:{G1:[],G2:[],G3:[],G4:[],G5:[]}};}
+function load(){
+  try{const r=localStorage.getItem(KEY);if(r){const p=JSON.parse(r);return Object.assign(blank(),p);}}catch(e){}
+  return blank();
+}
+let saveTimer=null;
+function save(){
+  try{localStorage.setItem(KEY,JSON.stringify(st));
+    const el=document.getElementById('saved');el.textContent='Saved';
+    clearTimeout(saveTimer);saveTimer=setTimeout(()=>el.textContent='',1400);
+  }catch(e){document.getElementById('saved').textContent='Could not save locally';}
+}
+
+/* ---------- table ---------- */
+function drawTable(){
+  const q=document.getElementById('q').value.trim().toLowerCase();
+  const openOnly=document.getElementById('onlyOpen').checked;
+  const tb=document.getElementById('tb');tb.innerHTML='';
+  let lastCls=null;
+  D.rows.forEach(r=>{
+    const hay=(r.cat+' '+r.inv+' '+r.holds+' '+r.vas+' '+r.van+' '+r.cls+' '+r.planner+' '+r.buyer+' '+r.band).toLowerCase();
+    if(q&&!hay.includes(q))return;
+    if(openOnly&&st.assign[r.id])return;
+    if(r.cls!==lastCls){
+      lastCls=r.cls;
+      const kids=D.rows.filter(x=>x.cls===r.cls);
+      const h=document.createElement('tr');h.className='cat-head';
+      h.innerHTML=`<td colspan="5">
+          <div class="cat-name">${esc(r.cat)} <span class="cls">· class ${r.cls}</span></div>
+          <div class="va">Value analysis — stock <b>${esc(r.vas)}</b>${r.van!==r.vas?` · non-stock <b>${esc(r.van)}</b>`:''}</div>
+        </td>
+        <td class="num">${fmt(kids.reduce((a,b)=>a+b.items,0))}</td>
+        <td>${kids.length>1?`<button class="mini" data-all="${r.cls}">Set all ${kids.length}</button>`:''}</td>`;
+      tb.appendChild(h);
+    }
+    const tr=document.createElement('tr');
+    if(r.gap)tr.className='gap';
+    const v=st.assign[r.id]||'';
+    tr.innerHTML=`<td class="cls">${r.cls}</td>
+      <td class="inv">${esc(r.inv)}${r.note?`<span class="flag" title="${esc(r.note)}">!</span>`:''}</td>
+      <td class="holds">${esc(r.holds||'—')}</td>
+      <td class="who">${r.planner?esc(r.planner):'<i>none named</i>'}</td>
+      <td class="who">${r.buyer?esc(r.buyer)+(r.band?`<em class="band">${esc(r.band)}</em>`:''):'<i>none named</i>'}</td>
+      <td class="num">${r.items?fmt(r.items):'—'}</td>
+      <td>${sel(r.id,v)}</td>`;
+    tb.appendChild(tr);
+  });
+  tb.querySelectorAll('select.pg').forEach(s=>s.addEventListener('change',e=>{
+    const id=+e.target.dataset.id;
+    if(e.target.value)st.assign[id]=e.target.value;else delete st.assign[id];
+    save();drawAll();
+  }));
+  tb.querySelectorAll('button[data-all]').forEach(b=>b.addEventListener('click',()=>{
+    const cls=+b.dataset.all;
+    const kids=D.rows.filter(x=>x.cls===cls);
+    const cur=st.assign[kids[0].id]||'';
+    const next=prompt('Set all '+kids.length+' inventory groups in "'+kids[0].cat+'" (class '+cls+') to which purchasing group?\n\nType 1, 2, 3, 4 or 5 — or leave empty to clear.',cur?cur[1]:'');
+    if(next===null)return;
+    const g=next.trim()?'G'+next.trim():'';
+    if(g&&!GK.includes(g)){alert('Enter 1, 2, 3, 4 or 5.');return;}
+    kids.forEach(x=>{if(g)st.assign[x.id]=g;else delete st.assign[x.id];});
+    save();drawAll();
+  }));
+}
+function sel(id,v){
+  let o=`<option value="">— not set —</option>`;
+  GK.forEach((g,i)=>{o+=`<option value="${g}"${v===g?' selected':''}>Group ${i+1}${st.names[g]?' · '+esc(st.names[g]):''}</option>`;});
+  return `<select class="pg" data-id="${id}" data-v="${v}" aria-label="Purchasing group">${o}</select>`;
+}
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+
+/* ---------- groups panel ---------- */
+function statsFor(g){
+  const rs=D.rows.filter(r=>st.assign[r.id]===g);
+  const seen=new Set(),cats=[];
+  rs.forEach(r=>{if(!seen.has(r.cls)){seen.add(r.cls);cats.push(r.label||r.cat);}});
+  const bs=[...new Set(rs.map(r=>r.buyer).filter(Boolean))];
+  return{rows:rs,items:rs.reduce((a,b)=>a+b.items,0),cats:cats,cur:bs};
+}
+function drawGroups(){
+  const box=document.getElementById('groups');box.innerHTML='';
+  GK.forEach((g,i)=>{
+    const s=statsFor(g);
+    const d=document.createElement('div');d.className='grp';
+    d.innerHTML=`<div class="grp-top">
+        <span class="tag" style="background:${GC[g]}">GROUP ${i+1}</span>
+        <input value="${esc(st.names[g]||'')}" placeholder="Name this group" data-name="${g}" aria-label="Name for group ${i+1}">
+      </div>
+      <div class="stats"><span><b>${s.cats.length}</b> categories</span><span><b>${s.rows.length}</b> inventory groups</span><span><b>${fmt(s.items)}</b> items</span></div>
+      <div class="cats">${s.cats.map(esc).join(' · ')}</div>
+      ${s.cur.length?`<div class="cur"><span>Buys for these rows today</span>${s.cur.map(esc).join(' · ')}</div>`:''}
+      <div class="chips">${st.buyers[g].map(b=>`<span class="chip">${esc(b)}<button data-rm="${esc(b)}" data-g="${g}" title="Remove">×</button></span>`).join('')}</div>
+      <div class="addb">
+        <input list="buyerlist" placeholder="Add a buyer" data-add="${g}" aria-label="Add buyer to group ${i+1}">
+        <button class="btn" data-addbtn="${g}">Add</button>
+      </div>`;
+    box.appendChild(d);
+  });
+  box.querySelectorAll('input[data-name]').forEach(inp=>inp.addEventListener('input',e=>{
+    st.names[e.target.dataset.name]=e.target.value;save();drawBar();
+    document.querySelectorAll('select.pg').forEach(s=>{const v=s.dataset.v;s.innerHTML=sel(s.dataset.id,v).replace(/^<select[^>]*>|<\/select>$/g,'');});
+  }));
+  box.querySelectorAll('button[data-rm]').forEach(b=>b.addEventListener('click',()=>{
+    const g=b.dataset.g;st.buyers[g]=st.buyers[g].filter(x=>x!==b.dataset.rm);save();drawGroups();
+  }));
+  box.querySelectorAll('button[data-addbtn]').forEach(b=>b.addEventListener('click',()=>addBuyer(b.dataset.addbtn)));
+  box.querySelectorAll('input[data-add]').forEach(inp=>inp.addEventListener('keydown',e=>{
+    if(e.key==='Enter'){e.preventDefault();addBuyer(inp.dataset.add);}
+  }));
+  const open=D.rows.filter(r=>!st.assign[r.id]);
+  document.getElementById('openLine').textContent=open.length
+    ? open.length+' of '+D.rows.length+' inventory groups still have no purchasing group ('+fmt(open.reduce((a,b)=>a+b.items,0))+' items).'
+    : 'Every inventory group is assigned.';
+  document.getElementById('openLine').style.cssText=open.length?'':'color:var(--g1);background:#EAF3EF;border-top-color:#C4DED4';
+}
+function addBuyer(g){
+  const inp=document.querySelector(`input[data-add="${g}"]`);
+  const v=inp.value.trim();if(!v)return;
+  GK.forEach(k=>{st.buyers[k]=st.buyers[k].filter(x=>x!==v);});
+  st.buyers[g].push(v);inp.value='';save();drawGroups();
+}
+
+/* ---------- allocation bar ---------- */
+function drawBar(){
+  const bar=document.getElementById('bar'),key=document.getElementById('barkey');
+  bar.innerHTML='';key.innerHTML='';
+  const total=D.total||1;let used=0;
+  GK.forEach((g,i)=>{
+    const s=statsFor(g);used+=s.items;
+    if(s.items>0){
+      const sp=document.createElement('span');
+      sp.style.cssText=`flex:${s.items} 1 0;background:${GC[g]}`;
+      sp.textContent=s.items/total>0.06?fmt(s.items):'';
+      sp.title=`Group ${i+1}${st.names[g]?' · '+st.names[g]:''} — ${fmt(s.items)} items`;
+      bar.appendChild(sp);
+    }
+    key.insertAdjacentHTML('beforeend',
+      `<span><i style="background:${GC[g]}"></i>G${i+1}${st.names[g]?' '+esc(st.names[g]):''} ${fmt(s.items)}</span>`);
+  });
+  const rest=total-used;
+  if(rest>0){
+    const sp=document.createElement('span');
+    sp.style.cssText=`flex:${rest} 1 0;background:#24384C;color:#8FA3B8`;
+    sp.textContent=rest/total>0.06?fmt(rest)+' unassigned':'';
+    bar.appendChild(sp);
+  }
+  key.insertAdjacentHTML('beforeend',`<span><i style="background:#24384C"></i>Unassigned ${fmt(rest)}</span>`);
+}
+function drawAll(){drawTable();drawGroups();drawBar();}
+
+/* ---------- export ---------- */
+function dl(name,text,type){
+  const b=new Blob([text],{type});const u=URL.createObjectURL(b);
+  const a=document.createElement('a');a.href=u;a.download=name;a.click();URL.revokeObjectURL(u);
+}
+document.getElementById('expJson').onclick=()=>dl('mapping.json',JSON.stringify(st,null,2),'application/json');
+document.getElementById('expCsv').onclick=()=>{
+  const esc2=v=>`"${String(v==null?'':v).replace(/"/g,'""')}"`;
+  const head=['Class','Category','VA stock','VA non-stock','Inventory group','What the group holds','Inventory planner','Buyer today','PR value band','Stock items','Purchasing group','Group name','Buyers in group','Note'];
+  const lines=[head.map(esc2).join(',')];
+  D.rows.forEach(r=>{
+    const g=st.assign[r.id]||'';
+    lines.push([r.cls,r.cat,r.vas,r.van,r.inv,r.holds,r.planner,r.buyer,r.band,r.items,
+      g?('Group '+g[1]):'',g?st.names[g]:'',g?st.buyers[g].join('; '):'',r.note].map(esc2).join(','));
+  });
+  dl('category-mapping.csv','\ufeff'+lines.join('\r\n'),'text/csv;charset=utf-8');
+};
+document.getElementById('impBtn').onclick=()=>document.getElementById('impFile').click();
+document.getElementById('impFile').onchange=e=>{
+  const f=e.target.files[0];if(!f)return;
+  const rd=new FileReader();
+  rd.onload=()=>{try{st=Object.assign(blank(),JSON.parse(rd.result));save();drawAll();}
+    catch(err){alert('That file is not a mapping.json this page can read.');}};
+  rd.readAsText(f);e.target.value='';
+};
+document.getElementById('reset').onclick=()=>{
+  if(confirm('Clear every purchasing group, name and buyer? This cannot be undone.')){st=blank();save();drawAll();}
+};
+document.getElementById('q').addEventListener('input',drawTable);
+document.getElementById('onlyOpen').addEventListener('change',drawTable);
+
+const dlist=document.createElement('datalist');dlist.id='buyerlist';
+D.buyers.forEach(b=>{const o=document.createElement('option');o.value=b.n;o.label=b.s;dlist.appendChild(o);});
+document.body.appendChild(dlist);
+drawAll();
+</script>
+</body>
+</html>
